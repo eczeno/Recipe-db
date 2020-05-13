@@ -1,2 +1,4 @@
 .recipedb/
 .vscode/
+__pycache__/
+*.pyc
