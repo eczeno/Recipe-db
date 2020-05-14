@@ -9,8 +9,8 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable = False)
     # source = link
-    preptime = db.Column(db.String(10))
-    cooktime = db.Column(db.String(10))
+    preptime = db.Column(db.String(20))
+    cooktime = db.Column(db.String(20))
     serves = db.Column(db.Integer)
     directions = db.Column(db.Text, nullable=False)
     notes = db.Column(db.Text)
