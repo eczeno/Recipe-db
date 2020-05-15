@@ -11,3 +11,8 @@ class EntryForm(FlaskForm):
     directions = TextField('Directions', [DataRequired(), Length(min=100, message='Please enter more directions')])
     notes = TextField('Notes')    
     submit = SubmitField('Submit')
+
+
+class SearchIngredientsForm(FlaskForm):
+    search_string = StringField('Search', [DataRequired()])
+    submit = SubmitField('Search')

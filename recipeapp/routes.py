@@ -1,6 +1,6 @@
 from flask import render_template, url_for, redirect
 from recipeapp import app, db
-from recipeapp.forms import EntryForm
+from recipeapp.forms import EntryForm, SearchIngredientsForm
 from recipeapp.models import Recipe
 
 @app.route('/')
@@ -8,9 +8,20 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/search')
+@app.route('/search', methods=['GET','POST'])
 def search():
-    return render_template('search.html')
+    form = SearchIngredientsForm()
+    recipes = Recipe.query.all()
+    if form.validate_on_submit():
+        # search_string = form.search.data
+        # search_ingredients = list(search_string)
+        return redirect(url_for('results'))
+    return render_template('search.html', form=form, recipes=recipes)
+
+
+@app.route('/results')
+def results():
+    return render_template('results.html')
 
 
 @app.route('/enter', methods=('GET', 'POST'))
