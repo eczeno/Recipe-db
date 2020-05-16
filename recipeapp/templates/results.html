@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
     <h1>Results</h1>
-    {% for result in results_list %}
+    {% for result in recipe_objects %}
         <p>{{ result.title }}</p>
         <p>{{ result.preptime }}</p>
         <p>{{ result.cooktime }}</p>

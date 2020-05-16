@@ -1,7 +1,7 @@
-from flask import render_template, url_for, redirect, request, session
+from flask import render_template, url_for, redirect, request, session, jsonify
 from recipeapp import app, db
 from recipeapp.forms import EntryForm, SearchIngredientsForm
-from recipeapp.models import Recipe
+from recipeapp.models import Recipe, Ingredient, RecipeSchema
 
 
 @app.route('/')
@@ -22,14 +22,14 @@ def search():
         else:
             search_list = []
         for ingredient in search_list:
+            ingredient_obj = Ingredient.query.filter_by(name=ingredient).first()
+            print('obj =', ingredient_obj, type(ingredient_obj))
             for recipe in recipes:
-                print(recipe.ingredients, recipe.title)
-                if ingredient in recipe.title:
-                    results_list.append(recipe.to_json())
-                    print('appended to results')
-        # print('resultslist =', results_list[0], type(results_list[0]))
-        session['results_list'] = results_list   
-    print('session =', session['results_list'], type(session['results_list']))              
+                ingredients_list = list(recipe.ingredients)
+                if ingredient_obj in ingredients_list:
+                    results_list.append(recipe.id)
+                    print('results =', results_list)
+        session['results_list'] = results_list
     if form.validate_on_submit():
         return redirect(url_for('results'))
     return render_template('search.html', form=form, recipes=recipes)
@@ -37,18 +37,37 @@ def search():
 
 @app.route('/results')
 def results():
-    print(session.get('results_list'))
     results_list = session.get('results_list')
-    
-    # print(results_list, type(results_list))
-    return render_template('results.html', results_list=results_list)
+    # result = session.query(Recipe).filter(Recipe.id = recipe_id)
+    recipe_objects = []
+    if results_list:
+        for recipe_id in results_list:
+            recipe_objects.append(Recipe.query.get(recipe_id)) 
+            print('recipe_objects is now: ', recipe_objects)         
+    return render_template('results.html', recipe_objects=recipe_objects)
 
 
 @app.route('/enter', methods=('GET', 'POST'))
 def enter():
     form = EntryForm()
-    if form.validate_on_submit():
-        recipe = Recipe(title=form.title.data, ingredients=form.ingredients.data, directions=form.directions.data)
+    if form.validate_on_submit():        
+        recipe = Recipe(title=form.title.data, directions=form.directions.data)
+        if form.preptime:
+            recipe.preptime = form.preptime.data
+        if form.cooktime:
+            recipe.cooktime = form.cooktime.data
+        if form. serves:
+            recipe.serves = form.serves.data
+        if form.notes:
+            recipe.notes = form.notes.data
+        if form.ingredients_string:            
+            for ingredient in form.ingredients_string.data.split(','):
+                seen = Ingredient.query.filter_by(name=ingredient).first()
+                if seen:
+                    recipe.ingredients.append(seen)
+                else:
+                    ingredient_obj = Ingredient(name=ingredient)
+                    recipe.ingredients.append(ingredient_obj)            
         db.session.add(recipe)
         db.session.commit()
         return redirect(url_for('entered'))
