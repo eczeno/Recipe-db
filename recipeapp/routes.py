@@ -60,9 +60,13 @@ def enter():
             recipe.serves = form.serves.data
         if form.notes:
             recipe.notes = form.notes.data
-        if form.ingredients_string:            
-            for ingredient in form.ingredients_string.data.split(','):
+        if form.ingredients_string:        
+            new_string = ''.join(form.ingredients_string.data.split())
+            new_list = new_string.split(',')
+            print('newlist =', new_list)
+            for ingredient in new_list:
                 seen = Ingredient.query.filter_by(name=ingredient).first()
+                print('seen =', seen, type(seen))
                 if seen:
                     recipe.ingredients.append(seen)
                 else:
