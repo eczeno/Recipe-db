@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="formwrapper">
+        <h2 class="title">Enter Link</h2>
+        <form method="POST" action="#">
+            {{ form.hidden_tag() }}
+            <div class="form-field">{{ form.url }}</div>
+                {% if form.url.errors %}
+                    <ul class="errors">
+                        {% for error in form.url.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {{ form.submit }}
+        </form>
+    </div>
+{% endblock content %} 
