@@ -4,10 +4,10 @@
         <h2 class="title">Search by Ingredients</h2>
         <form method="POST" action="#">
             {{ form.hidden_tag() }}
-            <div class="form-field">{{ form.search_string }}</div>
-                {% if form.search_string.errors %}
+            <div class="form-field">{{ form.ingredients_string }}</div>
+                {% if form.ingredients_string.errors %}
                     <ul class="errors">
-                        {% for error in form.search_string.errors %}
+                        {% for error in form.ingredients_string.errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </ul>

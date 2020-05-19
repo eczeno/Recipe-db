@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <h1>{{ recipe.title }}</h1>
+    <p>Preptime:  {{ recipe.preptime }}</p>
+    <p>Cooktime:  {{ recipe.cooktime }}</p>
+    <p>Total time : {{ recipe.totaltime }}</p>
+    <p>Recipe serves:  {{ recipe.serves }}</p>
+    <h2>Ingredients:</h2>
+    {% for line in recipe.ingredients %}
+      <p>{{ line }}</p>
+    {% endfor %}
+    <h2>Directions:</h2>
+    {% for line in recipe.directions %}
+      <p>{{ line }}</p>
+    {% endfor %}
+
+{% endblock content %}

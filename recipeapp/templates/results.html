@@ -1,13 +1,10 @@
 {% extends 'layout.html' %}
 {% block content %}
     <h1>Results</h1>
-    {% for result in recipe_objects %}
-        <p>{{ result.title }}</p>
-        <p>{{ result.preptime }}</p>
-        <p>{{ result.cooktime }}</p>
-        <p>{{ result.serves }}</p>
-        <p>{{ result.ingredients }}</p>
-        <p>{{ result.directions }}</p>
-        <p>{{ result.notes }}</p>
+    {% for recipe_id, recipe in recipe_objects.items() %}
+        <a href= "{{ url_for('showrecipe', id=recipe_id) }}">{{ recipe[0].title }} which serves: {{ recipe[0].serves }}</a>
+        <p>{{ recipe[1] }}</p>
+        <p>==========================</p>
+        <p></p>
     {% endfor %}
 {% endblock content %}

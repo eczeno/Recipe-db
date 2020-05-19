@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextField, SubmitField, IntegerField
+from wtforms import StringField, TextField, SubmitField, IntegerField, FieldList
 from wtforms.validators import InputRequired, Length, NumberRange, URL
 
 class EntryForm(FlaskForm):
@@ -17,5 +17,6 @@ class EnterLinkForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class SearchIngredientsForm(FlaskForm):
-    search_string = StringField('Search string', [InputRequired()])
+    ingredients_string = StringField('ingredients_string', validators=[InputRequired(), Length(min=1)])
+    # search_string = StringField('Search string', [InputRequired()])
     submit = SubmitField('Search')

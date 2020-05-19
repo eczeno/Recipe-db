@@ -5,7 +5,7 @@ import datetime
 class Recipe(db.Model):
     __tablename__ = 'recipes'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable = False)
+    title = db.Column(db.String(), nullable = False)
     source = db.Column(db.String())
     preptime = db.Column(db.Interval())
     cooktime = db.Column(db.Interval())
