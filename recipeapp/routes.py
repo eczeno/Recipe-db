@@ -1,6 +1,6 @@
-from flask import render_template, url_for, redirect, request, session
+from flask import render_template, url_for, redirect, request, session, flash
 from recipeapp import app, db
-from recipeapp.forms import EntryForm, SearchIngredientsForm, EnterLinkForm
+from recipeapp.forms import EntryForm, SearchIngredientsForm, EnterLinkForm, DeleteForm
 from recipeapp.models import Recipe, Ingredient, Directions
 from collections import OrderedDict
 import scrape_schema_recipe
@@ -12,14 +12,32 @@ def home():
     return render_template('home.html')
 
 
+@app.route('/delete/', methods=['GET', 'POST'])
+def delete():
+    form = DeleteForm()
+    if form.validate_on_submit():
+        delete_id = form.delete_id.data
+        delete_recipe = Recipe.query.filter_by(id=delete_id).first()
+        if delete_recipe:
+            db.session.delete(delete_recipe)
+            db.session.commit()
+            return redirect(url_for('deleted', delete_id=delete_id))
+        flash('No recipe with that id.')
+    return render_template('delete.html', form=form)
+
+
+@app.route('/deleted/<delete_id>')
+def deleted(delete_id):
+    return render_template('deleted.html', delete_id=delete_id)
+
 
 @app.route('/search', methods=['GET','POST'])
 def search():
     form = SearchIngredientsForm()
     if form.validate_on_submit():
 
-        search_ingredients_string = form.ingredients_string
-        search_ingredients_string = ''.join(search_ingredients_string.data.split(' '))
+        search_ingredients_string = form.ingredients_string.data
+        search_ingredients_string = ''.join(search_ingredients_string.split(' '))
         search_ingredients_list = search_ingredients_string.split(',')
         recipe_ids = {}
         
@@ -37,14 +55,6 @@ def search():
                             recipe_ids[ingredient.recipe_id] = [ingredient_name]
                         elif ingredient_name not in recipe_ids[ingredient.recipe_id]:
                             recipe_ids[ingredient.recipe_id].append(ingredient_name)
-                        
-
-
-                        # if ingredient.recipe_id in recipe_ids.keys() and ingredient_name not in recipe_ids[ingredient.recipe_id]:
-                        #     recipe_ids[ingredient.recipe_id].append(ingredient_name)
-                        # else:
-                        #     recipe_ids[ingredient.recipe_id] = [ingredient_name]
-        print('recipeids =', recipe_ids)
         session['recipe_ids'] = recipe_ids
         return redirect(url_for('results'))
     return render_template('search.html', form=form)

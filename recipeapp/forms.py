@@ -18,5 +18,8 @@ class EnterLinkForm(FlaskForm):
 
 class SearchIngredientsForm(FlaskForm):
     ingredients_string = StringField('ingredients_string', validators=[InputRequired(), Length(min=1)])
-    # search_string = StringField('Search string', [InputRequired()])
     submit = SubmitField('Search')
+
+class DeleteForm(FlaskForm):
+    delete_id = IntegerField('delete_id', validators=[InputRequired(), NumberRange()])
+    submit = SubmitField('Delete')

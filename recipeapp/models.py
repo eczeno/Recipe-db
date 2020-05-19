@@ -11,8 +11,8 @@ class Recipe(db.Model):
     cooktime = db.Column(db.Interval())
     totaltime = db.Column(db.Interval())
     serves = db.Column(db.String(30))
-    directions = db.relationship('Directions', backref = 'recipe')
-    ingredients = db.relationship('Ingredient', backref = 'recipe')
+    directions = db.relationship('Directions', backref = 'recipe', cascade="all, delete-orphan")
+    ingredients = db.relationship('Ingredient', backref = 'recipe', cascade="all, delete-orphan")
     
 
     def __repr__(self):

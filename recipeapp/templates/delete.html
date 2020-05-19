@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="formwrapper">
+        <h2 class="title">Delete Recipe</h2>
+        <form method="POST" action="#">
+            {{ form.hidden_tag() }}
+            <div class="form-field">{{ form.delete_id }}</div>
+                {% if form.delete_id.errors %}
+                    <ul class="errors">
+                        {% for error in form.delete_id.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul class=flashes>
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}                
+            {{ form.submit }}
+        </form>
+    </div>
+{% endblock content %} 
