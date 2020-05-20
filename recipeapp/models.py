@@ -1,5 +1,4 @@
 from recipeapp import db
-import datetime
 
 
 class Recipe(db.Model):
@@ -16,7 +15,7 @@ class Recipe(db.Model):
     
 
     def __repr__(self):
-        return f'{self.title}'
+        return f'Recipe({self.title})'
 
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'

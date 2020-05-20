@@ -4,7 +4,6 @@ from recipeapp.forms import EntryForm, SearchIngredientsForm, EnterLinkForm, Del
 from recipeapp.models import Recipe, Ingredient, Directions
 from collections import OrderedDict
 import scrape_schema_recipe
-import datetime
 
 
 @app.route('/')
