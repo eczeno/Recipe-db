@@ -2,9 +2,10 @@
 {% block content %}
     <h1>Results</h1>
     {% for recipe_id, recipe in recipe_objects.items() %}
-        <a href= "{{ url_for('showrecipe', id=recipe_id) }}">id: {{recipe[0].id}}) {{ recipe[0].title }}, which serves: {{ recipe[0].serves }}</a>
+      <div class="container">
+        <a href= "{{ url_for('showrecipe', id=recipe_id) }}">{{recipe[0].id}}) {{ recipe[0].title }}, which serves: {{ recipe[0].serves }}</a>
         <p>{{ recipe[1] }}</p>
-        <p>==========================</p>
         <p></p>
+      </div>
     {% endfor %}
 {% endblock content %}

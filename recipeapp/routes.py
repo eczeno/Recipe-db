@@ -4,6 +4,7 @@ from recipeapp.forms import EntryForm, SearchIngredientsForm, EnterLinkForm, Del
 from recipeapp.models import Recipe, Ingredient, Directions
 from collections import OrderedDict
 import scrape_schema_recipe
+import datetime
 
 
 @app.route('/')
@@ -92,27 +93,47 @@ def enterlink():
             return redirect(url_for('linkfailed'))
         if recipe_list:
             link_recipe = recipe_list[0]
-            title = link_recipe['name']
-            recipe = Recipe(title=link_recipe['name'])
+            # title = link_recipe['name']
+            try:
+                recipe = Recipe(title=link_recipe['name'])
+            except :
+                flash('Something went wrong, try a different link')
+                return redirect(url_for('enterlink'))
             recipe.source = url
-            recipe.preptime = link_recipe['prepTime']
-            recipe.cooktime = link_recipe['cookTime']
-            recipe.totaltime = link_recipe['totalTime']
-            recipe.serves = link_recipe['recipeYield']
-            for line in link_recipe['recipeIngredient']:
-                recipe.ingredients.append(Ingredient(line=line)) 
-            if type(link_recipe['recipeInstructions']) is str:
-                recipe.directions.append(Directions(line=link_recipe['recipeInstructions']))
-            else:   
-                for line in link_recipe['recipeInstructions']:
-                    
-                    try:
-                        recipe.directions.append(Directions(line=line['text']))
-                    except:
-                        recipe.directions.append(Directions(line=line))
+            try:
+                recipe.preptime = link_recipe['prepTime']
+            except :
+                recipe.preptime = datetime.timedelta(minutes=0)
+            try:
+                recipe.cooktime = link_recipe['cookTime']
+            except :
+                recipe.cooktime = datetime.timedelta(minutes=0)            
+            try:
+                recipe.totaltime = link_recipe['totalTime']
+            except :
+                recipe.totaltime = datetime.timedelta(minutes=0)
+            try:
+                recipe.serves = link_recipe['recipeYield']
+            except :
+                recipe.serves = 'N/A'
+            try:
+                for line in link_recipe['recipeIngredient']:
+                    recipe.ingredients.append(Ingredient(line=line)) 
+                if type(link_recipe['recipeInstructions']) is str:
+                    recipe.directions.append(Directions(line=link_recipe['recipeInstructions']))
+                else:   
+                    for line in link_recipe['recipeInstructions']:
+                        
+                        try:
+                            recipe.directions.append(Directions(line=line['text']))
+                        except:
+                            recipe.directions.append(Directions(line=line))
+            except :
+                flash('Something went wrong, try a different link')
+                return redirect(url_for('enterlink'))
             db.session.add(recipe)
             db.session.commit()
-            return redirect(url_for('linkentered', title=title))
+            return redirect(url_for('linkentered', title=recipe.title))
     return render_template('enterlink.html', form=form)
 
 

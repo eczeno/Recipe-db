@@ -1,17 +1,22 @@
 {% extends 'layout.html' %}
 {% block content %}
-    <h1>{{ recipe.title }} (id:{{ recipe.id }})</h1>
-    <p>Preptime:  {{ recipe.preptime }}</p>
-    <p>Cooktime:  {{ recipe.cooktime }}</p>
-    <p>Total time : {{ recipe.totaltime }}</p>
-    <p>Recipe serves:  {{ recipe.serves }}</p>
+    <h1>{{ recipe.title }} ({{ recipe.id }})</h1>
+      <div class=container>
+        <p>Preptime:  {{ recipe.preptime }}</p>
+        <p>Cooktime:  {{ recipe.cooktime }}</p>
+        <p>Total time : {{ recipe.totaltime }}</p>
+        <p>Recipe serves:  {{ recipe.serves }}</p>
+      </div>
     <h2>Ingredients:</h2>
-    {% for line in recipe.ingredients %}
-      <p>{{ line }}</p>
-    {% endfor %}
+      <div class=container>      
+        {% for line in recipe.ingredients %}
+          <p> {{ line }}</p>
+        {% endfor %}
+      </div>
     <h2>Directions:</h2>
-    {% for line in recipe.directions %}
-      <p>{{ line }}</p>
-    {% endfor %}
-
+      <div class=container>      
+        {% for line in recipe.directions %}
+          <p>-  {{ line }}</p>
+        {% endfor %}
+      </div>
 {% endblock content %}
