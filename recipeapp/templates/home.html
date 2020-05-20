@@ -2,4 +2,9 @@
 {% block content %}
     <h1>Hi Kascha</h1>
     <p>Welcome to your recipe database.</p>
+    <p>Here are your recipes:</p>
+    {% for recipe in recipes %}
+    <a href= "{{ url_for('showrecipe', id=recipe.id) }}">Id: {{recipe.id}}) {{ recipe.title }}</a>
+        <p></p>
+    {% endfor %}
 {% endblock content %}

@@ -3,7 +3,7 @@ from wtforms import StringField, TextField, SubmitField, IntegerField, FieldList
 from wtforms.validators import InputRequired, Length, NumberRange, URL
 
 class EntryForm(FlaskForm):
-    title = StringField('Title', [InputRequired()])
+    title = StringField('Title', [InputRequired()], render_kw={'autofocus': True})
     preptime = StringField('Prep time')
     cooktime = StringField('Cook time')
     serves = IntegerField('Serves', [NumberRange(message='Please enter an integer')])
@@ -13,13 +13,13 @@ class EntryForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class EnterLinkForm(FlaskForm):
-    url = StringField('url', validators=[InputRequired(), URL()])
+    url = StringField('url', validators=[InputRequired(), URL()], render_kw={'autofocus': True})
     submit = SubmitField('Submit')
 
 class SearchIngredientsForm(FlaskForm):
-    ingredients_string = StringField('ingredients_string', validators=[InputRequired(), Length(min=1)])
+    ingredients_string = StringField('ingredients_string', validators=[InputRequired(), Length(min=1)], render_kw={'autofocus': True})
     submit = SubmitField('Search')
 
 class DeleteForm(FlaskForm):
-    delete_id = IntegerField('delete_id', validators=[InputRequired(), NumberRange()])
+    delete_id = IntegerField('delete_id', validators=[InputRequired(), NumberRange()], render_kw={'autofocus': True})
     submit = SubmitField('Delete')

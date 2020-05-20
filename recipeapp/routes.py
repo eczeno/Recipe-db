@@ -9,7 +9,8 @@ import datetime
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    recipes = Recipe.query.all()
+    return render_template('home.html', recipes=recipes)
 
 
 @app.route('/delete/', methods=['GET', 'POST'])
@@ -43,12 +44,8 @@ def search():
         
 
         if search_ingredients_list:
-            print('searchlist =', search_ingredients_list)
             for ingredient_name in search_ingredients_list:
-                print('ingname =', ingredient_name)
                 ingredient_objects = Ingredient.query.filter(Ingredient.line.like(f'%{ingredient_name}%')).all()
-                print('ingobjlst =', ingredient_objects)
-                print('type =', type(ingredient_objects[0]), 'len =', len(ingredient_objects))
                 if ingredient_objects:
                     for ingredient in ingredient_objects:
                         if ingredient.recipe_id not in recipe_ids.keys():
@@ -78,7 +75,6 @@ def results():
 @app.route('/showrecipe/<id>', methods=['POST', 'GET'])
 def showrecipe(id):
     recipe_id = id
-    print('recipeid =', recipe_id)
     recipe = Recipe.query.get(recipe_id)
     return render_template('showrecipe.html', recipe=recipe)
 
@@ -88,6 +84,9 @@ def enterlink():
     form = EnterLinkForm()
     if form.validate_on_submit():
         url = str(form.url.data)
+        if Recipe.query.filter_by(source=url).all():
+            flash('That link has already been entered')
+            return redirect(url_for('enterlink'))
         try:
             recipe_list = scrape_schema_recipe.scrape_url(url, python_objects=True)
         except:
@@ -103,7 +102,6 @@ def enterlink():
             recipe.serves = link_recipe['recipeYield']
             for line in link_recipe['recipeIngredient']:
                 recipe.ingredients.append(Ingredient(line=line)) 
-            print('len instructions =', len(link_recipe['recipeInstructions']), type(link_recipe['recipeInstructions']))
             if type(link_recipe['recipeInstructions']) is str:
                 recipe.directions.append(Directions(line=link_recipe['recipeInstructions']))
             else:   
