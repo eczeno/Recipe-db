@@ -1,6 +1,7 @@
 .recipedb/
 .vscode/
-__pycache__/
+
 *.pyc
 *.db-journal
 .env
+__pycache__/
