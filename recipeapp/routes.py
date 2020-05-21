@@ -1,6 +1,6 @@
 from flask import render_template, url_for, redirect, request, session, flash
 from recipeapp import app, db
-from recipeapp.forms import EntryForm, SearchIngredientsForm, EnterLinkForm, DeleteForm
+from recipeapp.forms import SearchIngredientsForm, EnterLinkForm, DeleteForm
 from recipeapp.models import Recipe, Ingredient, Directions
 from collections import OrderedDict
 import scrape_schema_recipe
@@ -36,13 +36,9 @@ def deleted(delete_id):
 def search():
     form = SearchIngredientsForm()
     if form.validate_on_submit():
-
-        search_ingredients_string = form.ingredients_string.data
-        search_ingredients_string = ''.join(search_ingredients_string.split(' '))
+        search_ingredients_string = ''.join(search_ingredients_string.data.split(' '))
         search_ingredients_list = search_ingredients_string.split(',')
         recipe_ids = {}
-        
-
         if search_ingredients_list:
             for ingredient_name in search_ingredients_list:
                 ingredient_objects = Ingredient.query.filter(Ingredient.line.like(f'%{ingredient_name}%')).all()
@@ -60,7 +56,6 @@ def search():
 @app.route('/results')
 def results():
     recipe_ids = session.get('recipe_ids')
-
     recipe_objects = {}
     if recipe_ids.keys():
         for recipe_id, ingredients in recipe_ids.items():
@@ -68,7 +63,6 @@ def results():
             ingredients = ', '.join(ingredients)
             recipe_objects[recipe_id] = [Recipe.query.get(recipe_id), ingredients]
     recipe_objects = OrderedDict(sorted(recipe_objects.items(), key=lambda x: len(x[1][1]), reverse=True))
-
     return render_template('results.html', recipe_objects=recipe_objects)
 
 
@@ -93,7 +87,6 @@ def enterlink():
             return redirect(url_for('linkfailed'))
         if recipe_list:
             link_recipe = recipe_list[0]
-            # title = link_recipe['name']
             try:
                 recipe = Recipe(title=link_recipe['name'])
             except :
@@ -127,7 +120,10 @@ def enterlink():
                         try:
                             recipe.directions.append(Directions(line=line['text']))
                         except:
-                            recipe.directions.append(Directions(line=line))
+                            if type(line) is str:
+                                recipe.directions.append(Directions(line=line))
+                            else:
+                                recipe.directions.append(Directions(line='Could not parse directions.'))
             except :
                 flash('Something went wrong, try a different link')
                 return redirect(url_for('enterlink'))
@@ -145,36 +141,3 @@ def linkentered(title):
 @app.route('/linkfailed')
 def linkfailed():
     return render_template('linkfailed.html')
-
-
-@app.route('/enter', methods=('GET', 'POST'))
-def enter():
-    form = EntryForm()
-    if form.validate_on_submit():        
-        recipe = Recipe(title=form.title.data, directions=form.directions.data)
-        if form.preptime:
-            recipe.preptime = form.preptime.data
-        if form.cooktime:
-            recipe.cooktime = form.cooktime.data
-        if form. serves:
-            recipe.serves = form.serves.data
-        if form.notes:
-            recipe.notes = form.notes.data
-        if form.ingredients_string:        
-            new_string = ''.join(form.ingredients_string.data.split())
-            new_list = new_string.split(',')
-            for ingredient in new_list:
-                seen = Ingredient.query.filter_by(name=ingredient).first()
-                if seen:
-                    recipe.ingredients.append(seen)
-                else:
-                    ingredient_obj = Ingredient(name=ingredient)
-                    recipe.ingredients.append(ingredient_obj)            
-        db.session.add(recipe)
-        db.session.commit()
-        return redirect(url_for('entered'))
-    return render_template('enter.html', form=form)
-
-@app.route('/entered')
-def entered():
-    return render_template('entered.html')

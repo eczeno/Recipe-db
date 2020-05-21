@@ -24,7 +24,7 @@ class Ingredient(db.Model):
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'))
 
     def __repr__(self):
-        return f'{self.line}'
+        return f'Ingredient({self.line})'
 
 class Directions(db.Model):
     __tablename__ = 'directions'
@@ -33,5 +33,5 @@ class Directions(db.Model):
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'))
 
     def __repr__(self):
-        return f'{self.line}'
+        return f'Directions({self.line})'
 
