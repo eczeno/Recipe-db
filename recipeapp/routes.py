@@ -36,7 +36,7 @@ def deleted(delete_id):
 def search():
     form = SearchIngredientsForm()
     if form.validate_on_submit():
-        search_ingredients_string = ''.join(search_ingredients_string.data.split(' '))
+        search_ingredients_string = ''.join(form.ingredients_string.data.split(' '))
         search_ingredients_list = search_ingredients_string.split(',')
         recipe_ids = {}
         if search_ingredients_list:
