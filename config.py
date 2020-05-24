@@ -7,5 +7,5 @@ from dotenv import load_dotenv
 TESTING = False
 DEBUG = False
 # FLASK_ENV = 'development'
-# SQLALCHEMY_DATABASE_URI = getenv('SQLALCHEMY_DATABASE_URI')
-# SECRET_KEY = getenv('SECRET_KEY')
+SQLALCHEMY_DATABASE_URI = getenv('SQLALCHEMY_DATABASE_URI')
+SECRET_KEY = getenv('SECRET_KEY')
