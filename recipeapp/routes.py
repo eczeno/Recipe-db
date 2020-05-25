@@ -38,7 +38,7 @@ def search():
     if form.validate_on_submit():
         search_ingredients_string = ''.join(form.ingredients_string.data.split(' '))
         search_ingredients_list = search_ingredients_string.split(',')
-        recipe_ids = {}
+        recipe_ids = {} 
         if search_ingredients_list:
             for ingredient_name in search_ingredients_list:
                 ingredient_objects = Ingredient.query.filter(Ingredient.line.like(f'%{ingredient_name}%')).all()
