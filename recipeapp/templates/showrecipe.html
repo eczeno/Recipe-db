@@ -10,13 +10,13 @@
     <h2>Ingredients:</h2>
       <div class=container>      
         {% for line in recipe.ingredients %}
-          <p> {{ line }}</p>
+          <p> {{ line.line }}</p>
         {% endfor %}
       </div>
     <h2>Directions:</h2>
       <div class=container>      
         {% for line in recipe.directions %}
-          <p>-  {{ line }}</p>
+          <p>-  {{ line.line }}</p>
         {% endfor %}
       </div>
 {% endblock content %}
