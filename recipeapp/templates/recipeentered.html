@@ -1,0 +1,5 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <h1>Recipe Entered</h1>
+    <a href= "{{ url_for('showrecipe', id=id) }}">{{ id }} ) {{ title }} has been entered.</a>    
+{% endblock content %}

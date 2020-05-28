@@ -1,6 +1,6 @@
 from flask import render_template, url_for, redirect, request, session, flash
 from recipeapp import app, db
-from recipeapp.forms import SearchIngredientsForm, EnterLinkForm, DeleteForm
+from recipeapp.forms import SearchIngredientsForm, EnterLinkForm, DeleteForm, EntryForm
 from recipeapp.models import Recipe, Ingredient, Directions
 from collections import OrderedDict
 import scrape_schema_recipe
@@ -73,6 +73,41 @@ def showrecipe(id):
     return render_template('showrecipe.html', recipe=recipe)
 
 
+@app.route('/manualentry/', methods=['GET', 'POST'])
+def manualentry():
+    form = EntryForm()
+    if form.validate_on_submit():
+        recipe = Recipe(title=form.title.data)
+        try:
+            recipe.preptime = datetime.timedelta(minutes = form.preptime.data)
+        except :
+            recipe.preptime = datetime.timedelta(minutes=0)
+        try:
+            recipe.cooktime = datetime.timedelta(minutes = form.cooktime.data)
+        except :
+            recipe.cooktime = datetime.timedelta(minutes=0)            
+        try:
+            recipe.totaltime = datetime.timedelta(minutes = form.cooktime.data+form.preptime.data)
+        except :
+            recipe.totaltime = datetime.timedelta(minutes=0)
+        try:
+            recipe.serves = form.serves.data
+        except :
+            recipe.serves = 'N/A'
+        ingredients_list = [x.lstrip(' ') for x in form.ingredients.data.split(',')]
+        for line in ingredients_list:
+            recipe.ingredients.append(Ingredient(line=line))
+        directions_list = [x.strip() + '.' for x in form.directions.data.strip().split('.')][:-1]
+        for line in directions_list:
+            recipe.directions.append(Directions(line=line))
+        db.session.add(recipe)
+        db.session.commit()
+        print('recipeid = ', recipe.id)
+        return redirect(url_for('recipeentered', title=recipe.title, id=recipe.id))
+
+    return render_template('manualentry.html', form=form)    
+
+
 @app.route('/enterlink', methods=['GET', 'POST'])
 def enterlink():
     form = EnterLinkForm()
@@ -129,13 +164,13 @@ def enterlink():
                 return redirect(url_for('enterlink'))
             db.session.add(recipe)
             db.session.commit()
-            return redirect(url_for('linkentered', title=recipe.title))
+            return redirect(url_for('recipeentered', title=recipe.title, id=recipe.id))
     return render_template('enterlink.html', form=form)
 
 
-@app.route('/linkentered/<title>')
-def linkentered(title):
-    return render_template('linkentered.html', title=title)
+@app.route('/recipeentered/<id>-<title>')
+def recipeentered(title, id):
+    return render_template('recipeentered.html', title=title, id=id)
 
 
 @app.route('/linkfailed')

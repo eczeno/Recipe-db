@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="formwrapper">
+    <h2>Enter Recipe</h2>
+    <form method="POST" action="#">
+        {{ form.hidden_tag() }}
+        <div class="form"><label>{{ form.title.label }}</label>
+            {{ form.title(class_='form-control') }}</div>
+            {% if form.title.errors %}
+            <ul class="errors">
+                {% for error in form.title.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        <div class="form"><label>{{ form.preptime.label }}</label>
+            {{ form.preptime(class_='form-control') }}</div>
+            {% if form.preptime.errors %}
+            <ul class="errors">
+                {% for error in form.preptime.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        <div class="form"><label>{{ form.cooktime.label }}</label>
+            {{ form.cooktime(class_='form-control') }}</div>
+            {% if form.cooktime.errors %}
+            <ul class="errors">
+                {% for error in form.cooktime.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        <div class="form"><label>{{ form.serves.label }}</label>
+            {{ form.serves(class_='form-control') }}</div>
+            {% if form.serves.errors %}
+            <ul class="errors">
+                {% for error in form.serves.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        <div class="form">{{ form.ingredients.label }}</div>
+            {{ form.ingredients(cols=100, rows = 2)}}
+            {% if form.ingredients.errors %}
+            <ul class="errors">
+                {% for error in form.ingredients.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        <div class="form">{{ form.directions.label }}</div>
+            {{ form.directions(cols=100, rows=15)}}
+            {% if form.directions.errors %}
+            <ul class="errors">
+                {% for error in form.directions.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        <div>{{ form.submit }}</div>
+    </form>
+</div>
+{% endblock content %} 
+
+
+
