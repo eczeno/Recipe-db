@@ -1,6 +1,6 @@
 from flask import render_template, url_for, redirect, request, session, flash
 from recipeapp import app, db
-from recipeapp.forms import SearchIngredientsForm, EnterLinkForm, DeleteForm, EntryForm
+from recipeapp.forms import SearchIngredientsForm, SearchTitleForm, EnterLinkForm, DeleteForm, EntryForm
 from recipeapp.models import Recipe, Ingredient, Directions
 from collections import OrderedDict
 import scrape_schema_recipe
@@ -34,23 +34,38 @@ def deleted(delete_id):
 
 @app.route('/search', methods=['GET','POST'])
 def search():
-    form = SearchIngredientsForm()
-    if form.validate_on_submit():
-        search_ingredients_string = ''.join(form.ingredients_string.data.split(' '))
-        search_ingredients_list = search_ingredients_string.split(',')
-        recipe_ids = {} 
-        if search_ingredients_list:
-            for ingredient_name in search_ingredients_list:
-                ingredient_objects = Ingredient.query.filter(Ingredient.line.like(f'%{ingredient_name}%')).all()
-                if ingredient_objects:
-                    for ingredient in ingredient_objects:
-                        if ingredient.recipe_id not in recipe_ids.keys():
-                            recipe_ids[ingredient.recipe_id] = [ingredient_name]
-                        elif ingredient_name not in recipe_ids[ingredient.recipe_id]:
-                            recipe_ids[ingredient.recipe_id].append(ingredient_name)
-        session['recipe_ids'] = recipe_ids
-        return redirect(url_for('results'))
-    return render_template('search.html', form=form)
+    formI = SearchIngredientsForm()
+    formT = SearchTitleForm()
+    recipe_ids = {}
+    if formI.validate_on_submit():
+        if formI.ingredients_string.validate(formI):
+            search_ingredients_list = [i.strip() for i in formI.ingredients_string.data.split(',')]             
+            if search_ingredients_list:
+                for ingredient_name in search_ingredients_list:
+                    ingredient_objects = Ingredient.query.filter(Ingredient.line.like(f'%{ingredient_name}%')).all()
+                    if ingredient_objects:
+                        for ingredient in ingredient_objects:
+                            if ingredient.recipe_id not in recipe_ids.keys():
+                                recipe_ids[ingredient.recipe_id] = [ingredient_name]
+                            elif ingredient_name not in recipe_ids[ingredient.recipe_id]:
+                                recipe_ids[ingredient.recipe_id].append(ingredient_name)
+            session['recipe_ids'] = recipe_ids
+            return redirect(url_for('results'))
+    elif formT.validate_on_submit():
+        if formT.title_string.validate(formT):
+            search_title_list = [t.strip() for t in formT.title_string.data.split(',')]
+            if search_title_list:
+                for term in search_title_list:
+                    recipes = Recipe.query.filter(Recipe.title.like(f'%{term}%'))
+                    if recipes:
+                        for recipe in recipes:
+                            if recipe.id not in recipe_ids.keys():
+                                recipe_ids[recipe.id] = [term]
+                            elif term not in recipe_ids[recipe.id]:
+                                recipe_ids[recipe.id].append(term)
+            session['recipe_ids'] = recipe_ids
+            return redirect(url_for('results'))
+    return render_template('search.html', formI=formI, formT=formT)
 
 
 @app.route('/results')
@@ -60,9 +75,10 @@ def results():
     if recipe_ids.keys():
         for recipe_id, ingredients in recipe_ids.items():
             ingredients = list(set(ingredients))
+            num = len(ingredients)
             ingredients = ', '.join(ingredients)
-            recipe_objects[recipe_id] = [Recipe.query.get(recipe_id), ingredients]
-    recipe_objects = OrderedDict(sorted(recipe_objects.items(), key=lambda x: len(x[1][1]), reverse=True))
+            recipe_objects[recipe_id] = (Recipe.query.get(recipe_id), ingredients, num)
+    recipe_objects = OrderedDict(sorted(recipe_objects.items(), key=lambda x: x[1][2], reverse=True))
     return render_template('results.html', recipe_objects=recipe_objects)
 
 

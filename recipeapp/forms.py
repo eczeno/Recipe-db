@@ -7,8 +7,14 @@ class EnterLinkForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class SearchIngredientsForm(FlaskForm):
-    ingredients_string = StringField('ingredients_string', validators=[InputRequired(), Length(min=1)], render_kw={'autofocus': True})
-    submit = SubmitField('Search')
+    ingredients_string = StringField('ingredients_string', validators=[InputRequired()], render_kw={'autofocus': True})
+    search_ingredients = SubmitField('Search Ingredients')
+
+
+class SearchTitleForm(FlaskForm):
+    title_string = StringField('title_string', validators=[InputRequired()])
+    search_title = SubmitField('Search Title')
+
 
 class DeleteForm(FlaskForm):
     delete_id = IntegerField('delete_id', validators=[InputRequired(), NumberRange()], render_kw={'autofocus': True})

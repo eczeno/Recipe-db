@@ -6,8 +6,8 @@ load_dotenv(path.join(basedir, '.env'))
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 TESTING = False
-# FLASK_ENV = 'development'
-FLASK_ENV = 'production'
+FLASK_ENV = 'development'
+# FLASK_ENV = 'production'
 if FLASK_ENV == 'production':
     SQLALCHEMY_DATABASE_URI = getenv('DATABASE_URL')
     DEBUG = False
